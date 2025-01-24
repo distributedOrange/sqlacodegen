@@ -5,9 +5,9 @@ import sys
 from contextlib import ExitStack
 from typing import TextIO
 
+from sqlalchemy import URL
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
-from sqlalchemy.url import URL
 
 if sys.version_info < (3, 10):
     from importlib_metadata import entry_points, version
