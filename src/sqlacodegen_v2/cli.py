@@ -7,6 +7,7 @@ from typing import TextIO
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
+from sqlalchemy.url import URL
 
 if sys.version_info < (3, 10):
     from importlib_metadata import entry_points, version
@@ -50,8 +51,14 @@ def main() -> None:
         parser.print_help()
         return
 
+    # Convert db_url from a string to a URL object so we can access methods
+    URL.make_url(args.url)
+    # Check driver type and handle it accordingly for known mssql+pyodbc case
+    if args.url.drivername == "mssql+pyodbc":
+        engine = create_engine(args.url, use_setinputsizes=False)
+    else:
+        engine = create_engine(args.url)
     # Use reflection to fill in the metadata
-    engine = create_engine(args.url)
     metadata = MetaData()
     tables = args.tables.split(",") if args.tables else None
     schemas = args.schemas.split(",") if args.schemas else [None]
