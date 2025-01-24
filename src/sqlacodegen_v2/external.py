@@ -5,7 +5,7 @@ from contextlib import ExitStack
 from typing import Optional, TextIO
 
 from sqlalchemy import URL
-from sqlalchemy.engine import create_engine
+from sqlalchemy.engine import create_engine, make_url
 from sqlalchemy.schema import MetaData
 
 if sys.version_info < (3, 10):
@@ -23,9 +23,9 @@ def generate_models(
     generators = {ep.name: ep for ep in entry_points(group="sqlacodegen.generators")}
 
     # Convert db_url from a string to a URL object so we can access methods
-    URL.make_url(db_url)
+    temp_url_object: URL = make_url(db_url)
     # Check driver type and handle it accordingly for known mssql+pyodbc case
-    if db_url.drivername == "mssql+pyodbc":
+    if temp_url_object.drivername == "mssql+pyodbc":
         engine = create_engine(db_url, use_setinputsizes=False)
     else:
         engine = create_engine(db_url)
