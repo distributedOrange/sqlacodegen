@@ -1,23 +1,24 @@
 from __future__ import annotations
 
-import logging
 import sys
 from contextlib import ExitStack
-from typing import TextIO, Optional, List
+from typing import Optional, TextIO
 
+from sqlalchemy import URL
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
 
 if sys.version_info < (3, 10):
-    from importlib_metadata import entry_points, version
+    from importlib_metadata import entry_points
 else:
-    from importlib.metadata import entry_points, version
+    from importlib.metadata import entry_points
+
 
 def generate_models(
-        db_url: str,
-        generator: str = "declarative",
-        options: Optional[dict] = None,
-        outfile_path: Optional[str] = None,
+    db_url: str,
+    generator: str = "declarative",
+    options: Optional[dict] = None,
+    outfile_path: Optional[str] = None,
 ) -> None:
     generators = {ep.name: ep for ep in entry_points(group="sqlacodegen.generators")}
 
@@ -48,4 +49,3 @@ def generate_models(
             outfile = sys.stdout
         # Write the generated model code to the specified file or standard output
         outfile.write(generator.generate())
-
